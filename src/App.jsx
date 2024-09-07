@@ -115,13 +115,17 @@ function SplitBill({ friend, onSplitBill }) {
           <label>🧍🏻‍♂️ Your expense</label>
           <input
             type="number"
-            value={yourExpense}
+            value={bill >= yourExpense ? yourExpense : 0}
             onChange={(e) => setYourExpense(Number(e.target.value))}
           />
         </div>
         <div>
           <label>🧍🏻‍♂️ {friend.name} expense</label>
-          <input type="number" value={otherExpense} disabled={true} />
+          <input
+            type="number"
+            value={otherExpense > 0 ? otherExpense : 0}
+            disabled
+          />
         </div>
         <div>
           <label>Who is paying the bill</label>
@@ -130,7 +134,12 @@ function SplitBill({ friend, onSplitBill }) {
             <option value={friend.name}>{friend.name}</option>
           </select>
         </div>
-        <button type="submit">Split bill</button>
+        <button
+          type="submit"
+          disabled={bill <= 0 || yourExpense <= 0 || otherExpense <= 0}
+        >
+          Split bill
+        </button>
       </form>
     </div>
   );
@@ -163,10 +172,20 @@ function Friend({ id, name, img_url, balance, selected, onSelect }) {
       <img className="friend-image" src={img_url} alt="batman picture" />
       <div className="friend-txt">
         <p className="friend-name">{name}</p>
-        <p style={balance > 0 ? { color: 'red' } : { color: 'green' }}>
-          {balance < 0
-            ? `${name} owes you ${Math.abs(balance)}$`
-            : `You owe ${name} ${balance}$`}
+        <p
+          style={
+            balance > 0
+              ? { color: 'red' }
+              : balance === 0
+                ? { color: 'black' }
+                : { color: 'green' }
+          }
+        >
+          {balance === 0
+            ? `You and ${name} are even`
+            : balance < 0
+              ? `${name} owes you ${Math.abs(balance)}$`
+              : `You owe ${name} ${balance}$`}
         </p>
       </div>
       <button className="friend-select-btn" onClick={() => onSelect(id)}>
