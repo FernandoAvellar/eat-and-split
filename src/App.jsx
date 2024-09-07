@@ -28,20 +28,24 @@ export default function App() {
   }
 
   function toggleShowButton() {
-    setShowButton((showButton) => setShowButton(!showButton));
+    setShowButton(!showButton);
   }
 
   function handleSplit(e) {
     {
-      console.log(e);
       e.whoPays === 'You'
         ? updateBalance(e.id, e.otherExpense * -1)
         : updateBalance(e.id, e.yourExpense);
     }
 
     function updateBalance(id, value) {
-      console.log(id);
-      console.log(value);
+      setFriends(
+        friends.map((friend) =>
+          friend.id === id
+            ? { ...friend, balance: friend.balance + value }
+            : friend
+        )
+      );
     }
   }
 
@@ -80,6 +84,11 @@ function SplitBill({ friend, onSplitBill }) {
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    setBill('');
+    setYourExpense(0);
+    setWhoPays('You');
+
     onSplitBill({
       bill: bill,
       yourExpense: yourExpense,
@@ -154,8 +163,10 @@ function Friend({ id, name, img_url, balance, selected, onSelect }) {
       <img className="friend-image" src={img_url} alt="batman picture" />
       <div className="friend-txt">
         <p className="friend-name">{name}</p>
-        <p>
-          {name} owes you ${balance}
+        <p style={balance > 0 ? { color: 'red' } : { color: 'green' }}>
+          {balance < 0
+            ? `${name} owes you ${Math.abs(balance)}$`
+            : `You owe ${name} ${balance}$`}
         </p>
       </div>
       <button className="friend-select-btn" onClick={() => onSelect(id)}>
