@@ -28,7 +28,7 @@ export default function App() {
   }
 
   function toggleShowButton() {
-    setShowButton(!showButton);
+    setShowButton((show) => !show);
   }
 
   function handleSplit(e) {
@@ -65,13 +65,15 @@ export default function App() {
           />
         )}
       </div>
-      {!showButton && (
-        <ButtonAddClose text="Add Friend" onClick={toggleShowButton} />
-      )}
       {showButton && (
         <AddFriend onAddFriend={(friend) => handleNewFriend(friend)} />
       )}
-      {showButton && <ButtonAddClose text="Close" onClick={toggleShowButton} />}
+      {
+        <ButtonAddClose
+          text={showButton ? 'Close' : 'Add Friend'}
+          onClick={toggleShowButton}
+        />
+      }
     </div>
   );
 }
@@ -197,22 +199,25 @@ function Friend({ id, name, img_url, balance, selected, onSelect }) {
 
 function AddFriend({ onAddFriend }) {
   const [name, setName] = useState('');
-  const [img_url, setImgUrl] = useState('../public/images/batman.jpg');
+  const [img_url, setImgUrl] = useState('https://i.pravatar.cc/48/');
 
   function handleSubmit(e) {
     e.preventDefault();
 
     if (!name || !img_url) return;
 
+    const id = crypto.randomUUID();
+
     const newFriend = {
-      id: Date.now(),
+      id: id,
       name,
-      img_url,
+      img_url: `${img_url}?=${id}`,
       balance: 0,
       selected: false,
     };
     onAddFriend(newFriend);
     setName('');
+    setImgUrl('https://i.pravatar.cc/48/');
   }
 
   return (
