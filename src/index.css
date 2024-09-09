@@ -10,26 +10,28 @@ body {
 
 .App {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 5px;
   align-items: left;
 }
 
-.user-and-split-view {
+.sidebar {
   display: flex;
-  flex-direction: row;
-  gap: 5px;
+  flex-direction: column;
+  gap: 10px;
+  width: fit-content;
 }
 
 .split-bill {
   background-color: rgb(238, 205, 144);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: start;
   gap: 20px;
-  width: 48%;
-  padding: 10px;
-  margin-left: 15px;
+  width: fit-content;
+  height: fit-content;
+  padding: 15px;
+  margin: 10px;
 }
 
 .split-bill form {
@@ -109,7 +111,7 @@ body {
 }
 
 .tb-friend-list {
-  width: 50%;
+  width: fit-content;
   padding: 10px;
   margin-bottom: 10px;
 }
@@ -131,7 +133,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  width: 50%;
+  width: fit-content;
   padding: 10px;
   margin-left: 15px;
 }

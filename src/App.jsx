@@ -9,10 +9,11 @@ export default function App() {
 
   function handleNewFriend(friend) {
     setFriends((friends) => [...friends, friend]);
-    toggleShowButton();
+    setShowButton(false);
   }
 
   function handleFriendSelect(id) {
+    setShowButton(false); //close new friend form  if it´s open
     setFriends((friends) => {
       const updatedFriend = friends.find((friend) => friend.id === id);
       // Se o amigo já estiver selecionado, desativa todos
@@ -51,29 +52,29 @@ export default function App() {
 
   return (
     <div className="App">
-      <div className="user-and-split-view">
+      <div className="sidebar">
         <FriendList
           friends={friends}
           onSelect={(id) => handleFriendSelect(id)}
         />
-        {friendSelected === null ? (
-          ''
-        ) : (
-          <SplitBill
-            friend={friendSelected}
-            onSplitBill={(e) => handleSplit(e)}
-          />
+        {showButton && (
+          <AddFriend onAddFriend={(friend) => handleNewFriend(friend)} />
         )}
+        {
+          <ButtonAddClose
+            text={showButton ? 'Close' : 'Add Friend'}
+            onClick={toggleShowButton}
+          />
+        }
       </div>
-      {showButton && (
-        <AddFriend onAddFriend={(friend) => handleNewFriend(friend)} />
-      )}
-      {
-        <ButtonAddClose
-          text={showButton ? 'Close' : 'Add Friend'}
-          onClick={toggleShowButton}
+      {friendSelected === null ? (
+        ''
+      ) : (
+        <SplitBill
+          friend={friendSelected}
+          onSplitBill={(e) => handleSplit(e)}
         />
-      }
+      )}
     </div>
   );
 }
@@ -81,11 +82,13 @@ export default function App() {
 function SplitBill({ friend, onSplitBill }) {
   const [bill, setBill] = useState('');
   const [yourExpense, setYourExpense] = useState(0);
+  const otherExpense = bill ? bill - yourExpense : '';
   const [whoPays, setWhoPays] = useState('You');
-  const otherExpense = bill - yourExpense;
 
   function handleSubmit(e) {
     e.preventDefault();
+
+    if (!bill || !yourExpense) return;
 
     setBill('');
     setYourExpense(0);
@@ -122,7 +125,7 @@ function SplitBill({ friend, onSplitBill }) {
           />
         </div>
         <div>
-          <label>🧍🏻‍♂️ {friend.name} expense</label>
+          <label>👨🏻‍🤝‍👩 {friend.name} expense</label>
           <input
             type="number"
             value={otherExpense > 0 ? otherExpense : 0}
@@ -153,14 +156,7 @@ function FriendList({ friends, onSelect }) {
       <tbody>
         {friends.map((friend) => (
           <tr key={friend.id}>
-            <Friend
-              id={friend.id}
-              name={friend.name}
-              img_url={friend.img_url}
-              balance={friend.balance}
-              selected={friend.selected}
-              onSelect={onSelect}
-            />
+            <Friend friend={friend} onSelect={onSelect} />
           </tr>
         ))}
       </tbody>
@@ -168,30 +164,30 @@ function FriendList({ friends, onSelect }) {
   );
 }
 
-function Friend({ id, name, img_url, balance, selected, onSelect }) {
+function Friend({ friend, onSelect }) {
   return (
     <td className="friend">
-      <img className="friend-image" src={img_url} alt="batman picture" />
+      <img className="friend-image" src={friend.img_url} alt="batman picture" />
       <div className="friend-txt">
-        <p className="friend-name">{name}</p>
+        <p className="friend-name">{friend.name}</p>
         <p
           style={
-            balance > 0
+            friend.balance > 0
               ? { color: 'red' }
-              : balance === 0
+              : friend.balance === 0
                 ? { color: 'black' }
                 : { color: 'green' }
           }
         >
-          {balance === 0
-            ? `You and ${name} are even`
-            : balance < 0
-              ? `${name} owes you ${Math.abs(balance)}$`
-              : `You owe ${name} ${balance}$`}
+          {friend.balance === 0
+            ? `You and ${friend.name} are even`
+            : friend.balance < 0
+              ? `${friend.name} owes you ${Math.abs(friend.balance)}$`
+              : `You owe ${friend.name} ${friend.balance}$`}
         </p>
       </div>
-      <button className="friend-select-btn" onClick={() => onSelect(id)}>
-        {selected ? 'Close' : 'Select'}
+      <button className="friend-select-btn" onClick={() => onSelect(friend.id)}>
+        {friend.selected ? 'Close' : 'Select'}
       </button>
     </td>
   );
